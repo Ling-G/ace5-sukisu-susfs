@@ -10,11 +10,13 @@
     "manifest": "bf362d8ccad9730190ae038922e886f5c3c7171f",
     "sukisu": "5ef32ad5d5eba3033f86467fd4fa094e032c5237",
     "susfs": "f6c046775c0a14834748cc82c03f1d1b0285c206",
-    "repo": "75d6b51a7ec94005c43c855bc4feb042674febfb"
+    "repo": "38d2fe11b9df521727fcca23c9dac086ce8378d3"
   },
   "susfs_version": "v2.3.0",
   "ndk_version": "27.2.12479018",
   "kpm": false,
   "sukisu_commit_count": 4657,
-  "sukisu_version": 41842
+  "sukisu_version": 41842,
+  "repo_signed_tag": "v2.58",
+  "repo_tag_object": "75d6b51a7ec94005c43c855bc4feb042674febfb"
 }
