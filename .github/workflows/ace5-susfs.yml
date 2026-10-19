@@ -1,0 +1,61 @@
+name: Ace 5 SukiSU SUSFS
+on:
+  workflow_dispatch:
+defaults:
+  run:
+    shell: bash
+permissions:
+  contents: read
+concurrency:
+  group: ace5-susfs-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 350
+    env:
+      ADDONS: ${{ runner.temp }}/ace5-addons
+      KERNEL_WORKSPACE: ${{ runner.temp }}/ace5-kernel
+      MANIFEST_REPO: ${{ runner.temp }}/ace5-manifest
+      NDK_VERSION: '27.2.12479018'
+    steps:
+      - name: Checkout build package
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install host tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git curl python3 zip unzip build-essential bc bison flex libssl-dev libelf-dev libncurses-dev rsync zstd lz4 cpio ninja-build
+          mkdir -p output logs
+      - name: Fetch pinned SukiSU and SUSFS
+        run: python3 scripts/fetch_addons.py "$ADDONS" 2>&1 | tee logs/fetch.log
+      - name: Build matching SUSFS userspace tool
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;$NDK_VERSION"
+          bash scripts/userspace.sh "$ADDONS" "$ANDROID_HOME/ndk/$NDK_VERSION" 2>&1 | tee logs/userspace.log
+      - name: Free hosted runner disk
+        run: |
+          test "$GITHUB_ACTIONS" = true
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /opt/hostedtoolcache /usr/local/lib/android
+          df -h . "$RUNNER_TEMP"
+          FREE_KB=$(df -Pk "$RUNNER_TEMP" | awk 'NR == 2 {print $4}')
+          test "$FREE_KB" -ge 45000000 || { echo 'At least 45 GB of free disk is required.'; exit 1; }
+      - name: Sync pinned Ace 5 Android 16 source tree
+        run: bash scripts/sync.sh "$KERNEL_WORKSPACE" "$ADDONS" "$MANIFEST_REPO" 2>&1 | tee logs/sync.log
+      - name: Integrate and build SukiSU with SUSFS
+        run: bash scripts/build.sh "$KERNEL_WORKSPACE" "$ADDONS"
+      - name: Upload checked kernel and matching userspace module
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: Ace5-F53-SukiSU-SUSFS-experimental
+          path: output/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: Ace5-build-logs
+          path: logs/
+          if-no-files-found: warn
+          retention-days: 14

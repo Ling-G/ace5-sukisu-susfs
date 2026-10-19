@@ -1,0 +1,12 @@
+{
+  "originalBlobs": 24,
+  "patchApplication": true,
+  "exactPatchedContents": true,
+  "reverseApplication": true,
+  "stockImageRejected": true,
+  "workflowYaml": true,
+  "bashSyntax": true,
+  "pythonSyntax": true,
+  "compiled": false,
+  "deviceTested": false
+}

@@ -1,0 +1,38 @@
+{
+  "assessedOn": "2026-10-19",
+  "firmware": "PKG110_16.0.8.300(CN01) F.53",
+  "kernelRelease": "6.1.141-android14-11-o-gffc54a6d2287",
+  "kmi": "6.1-android14-11",
+  "lkmTarget": "android14-6.1",
+  "compiler": "Android clang 17.0.2 r487747c",
+  "securityPatch": "2026-06-01",
+  "boot": {
+    "magic": "ANDROID!",
+    "kernelSize": 35695104,
+    "ramdiskSize": 0,
+    "osVersion": "0x1c0001a6",
+    "headerSize": 1584,
+    "headerVersion": 4,
+    "cmdline": ""
+  },
+  "initBoot": {
+    "magic": "ANDROID!",
+    "kernelSize": 0,
+    "ramdiskSize": 2389727,
+    "osVersion": "0x1c0001a6",
+    "headerSize": 1584,
+    "headerVersion": 4,
+    "cmdline": ""
+  },
+  "sha256": {
+    "boot": "cbf8fb73a79788d9ae8dac0f1fbbeae1d3e936c11089773f41d02c5130ba7d61",
+    "initBoot": "317b7650f902eedda517ea10e4682bc779b6183918504aa2539540b41b561cf6"
+  },
+  "limits": [
+    "No device runtime inspection or boot test",
+    "No source checkout or compilation",
+    "No patched images generated",
+    "Source branch exists and reports 6.1.141, exact firmware source commit correspondence not verified",
+    "Images have not been cryptographically compared to OTA payload partition hashes"
+  ]
+}
