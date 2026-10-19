@@ -14,5 +14,5 @@ cd "$WORKSPACE"
 python3 "$ADDONS/repo/repo" init -u "$MANIFEST" -m ace5.xml --depth=1 --repo-url=https://gerrit.googlesource.com/git-repo --repo-rev=v2.58
 ACTUAL_REPO_REV=$(git -C .repo/repo rev-parse HEAD)
 test "$ACTUAL_REPO_REV" = "$REPO_REV" || { echo "repo commit verification failed"; exit 1; }
-python3 "$ADDONS/repo/repo" sync -c --no-tags --no-clone-bundle -j4 --fail-fast
+python3 "$ADDONS/repo/repo" sync -v -c --no-tags --no-clone-bundle -j4 --fail-fast
 python3 "$ADDONS/repo/repo" manifest -r -o "$PACKAGE/output/resolved-manifest.xml"

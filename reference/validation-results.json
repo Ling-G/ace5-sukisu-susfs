@@ -1,5 +1,5 @@
 {
-  "originalBlobs": 24,
+  "originalBlobs": 25,
   "patchApplication": true,
   "exactPatchedContents": true,
   "reverseApplication": true,
@@ -8,5 +8,8 @@
   "bashSyntax": true,
   "pythonSyntax": true,
   "compiled": false,
-  "deviceTested": false
+  "deviceTested": false,
+  "selinuxCompatibilityPreflight": true,
+  "actionlint": true,
+  "lastCompleteBuild": "failed: upstream KernelSU-only SELinux interfaces; compatibility fix pending full rebuild"
 }

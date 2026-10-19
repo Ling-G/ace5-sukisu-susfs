@@ -47,6 +47,16 @@ def prepare(workspace, addons):
         for file in src.iterdir():
             if file.is_file():
                 shutil.copy2(file, common / folder / file.name)
+    # Fail before a long build if the SUSFS patch expects unavailable KSU APIs.
+    selinux_sources = '\n'.join((common / 'security/selinux' / f).read_text()
+                                 for f in ['hooks.c', 'selinuxfs.c', 'ss/services.c'])
+    for symbol in ['my_write_context', 'my_write_access', 'my_setprocattr']:
+        require(not re.search(r'\b' + symbol + r'\s*\(', selinux_sources),
+                'Incompatible upstream KernelSU-only SELinux interface: ' + symbol)
+    services = (common / 'security/selinux/ss/services.c').read_text()
+    for symbol in ['my_security_context_to_sid', 'my_security_context_str_to_sid']:
+        require(re.search(r'^int ' + symbol + r'\s*\([^;]+?\)\s*\{', services, re.M),
+                'Missing SELinux compatibility implementation: ' + symbol)
     dest = workspace / 'kernel_platform/SukiSU'
     require(not dest.exists(), 'Integration destination already exists')
     shutil.copytree(suki, dest, ignore=shutil.ignore_patterns('.git'))

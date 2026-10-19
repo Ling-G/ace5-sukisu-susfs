@@ -24,8 +24,9 @@
 
 - 拉取并固定一加 common、SukiSU builtin、SUSFS 源码。
 - 实际发现并解决原版 SUSFS 补丁在 Ace 5 源码上的五处上下文冲突。
-- 生成 patches/ace5-susfs.patch；对固定版本的原始 24 个内核文件执行完整应用检查。
+- 生成 patches/ace5-susfs.patch；对固定版本的原始 25 个内核文件执行完整应用检查。
 - 按 SukiSU 的实际接口适配 sucompat 的 bool 类型和 read 挂钩参数。
+- 修复完整编译发现的三个 SELinux 未定义接口；使用 SUSFS 上一提交的自包含实现，详见 patches/README.md。
 - 去掉当前 SukiSU builtin 不实现的上游 preinit 调用；保留该分支现有的 init.rc/ksud 启动路径。
 
 本地验证不等于完整内核编译或实机测试。首次运行 Actions 后仍可能出现 Bazel、ABI 或工具链问题，应保留日志按错误修复。
