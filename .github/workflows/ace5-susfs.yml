@@ -14,9 +14,6 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 350
     env:
-      ADDONS: ${{ runner.temp }}/ace5-addons
-      KERNEL_WORKSPACE: ${{ runner.temp }}/ace5-kernel
-      MANIFEST_REPO: ${{ runner.temp }}/ace5-manifest
       NDK_VERSION: '27.2.12479018'
     steps:
       - name: Checkout build package
@@ -26,6 +23,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y git curl python3 zip unzip build-essential bc bison flex libssl-dev libelf-dev libncurses-dev rsync zstd lz4 cpio ninja-build
           mkdir -p output logs
+          echo "ADDONS=$RUNNER_TEMP/ace5-addons" >> "$GITHUB_ENV"
+          echo "KERNEL_WORKSPACE=$RUNNER_TEMP/ace5-kernel" >> "$GITHUB_ENV"
+          echo "MANIFEST_REPO=$RUNNER_TEMP/ace5-manifest" >> "$GITHUB_ENV"
       - name: Fetch pinned SukiSU and SUSFS
         run: python3 scripts/fetch_addons.py "$ADDONS" 2>&1 | tee logs/fetch.log
       - name: Build matching SUSFS userspace tool
