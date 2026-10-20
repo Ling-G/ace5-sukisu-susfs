@@ -1,5 +1,7 @@
 # 一加 Ace 5：SukiSU + SUSFS 构建包
 
+**实机状态：第 4 次构建虽通过编译、root 和 SUSFS 检查，但 Wi-Fi、蓝牙、声音和移动数据实测异常，不能刷入。手机已恢复原有内核，四项功能恢复正常。当前修订加入原厂公开模块验证证书，待重新编译及完整复测。**
+
 适用评估对象：PKG110_16.0.8.300(CN01) F.53，内核 6.1.141-android14-11。
 
 ## 如何运行
@@ -58,3 +60,9 @@ SUSFS 不是 APK 安装选项，仅安装用户模块不能让原厂内核获得
 - SUSFS：https://gitlab.com/simonpunk/susfs4ksu
 
 补丁含 GPL-2.0 内核衍生代码，见 patches/LICENSE。新写的构建辅助脚本采用 MIT，见 LICENSE。
+
+## 原厂模块信任修复
+
+第 4 次构建的日志显示原厂 rfkill 等 GKI 模块被 protected export 校验拒绝，Wi-Fi/蓝牙依赖模块因此加载失败。重建时通过 CONFIG_SYSTEM_TRUSTED_KEYS 加入 F.53 原厂 boot 中提取的公开 X.509 证书，并保留本次构建自身的签名密钥及 MODULE_SIG_PROTECT。已用该公开证书实际验证原厂 rfkill 模块 CMS 签名，证书来源和摘要见 certs/provenance.json；不含私钥。collect.py 将从实际 Image 检查证书存在，音频和移动数据仍需单独复测。
+
+管理器需要 UAPI 6：正式版 v4.2.1_40994 是 UAPI 5，会提示更新管理器。已用官方 CI v4.2.1_41027 验证 root 和 SUSFS 正常： https://github.com/SukiSU-Ultra/SukiSU-Ultra/actions/runs/39278592599 。

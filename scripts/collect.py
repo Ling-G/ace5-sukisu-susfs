@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import re
 import shutil
+import ssl
 import sys
 import zlib
 
@@ -27,7 +28,7 @@ required = ['KSU', 'KSU_SUSFS', 'KSU_SUSFS_SUS_PATH', 'KSU_SUSFS_SUS_MOUNT',
             'KSU_SUSFS_SUS_KSTAT', 'KSU_SUSFS_SPOOF_UNAME', 'KSU_SUSFS_ENABLE_LOG',
             'KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS', 'KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG',
             'KSU_SUSFS_OPEN_REDIRECT', 'KSU_SUSFS_SUS_MAP', 'CFI_CLANG', 'MODVERSIONS',
-            'SECURITY_SELINUX']
+            'SECURITY_SELINUX', 'SYSTEM_TRUSTED_KEYRING', 'MODULE_SIG_PROTECT']
 for name in required:
     if 'CONFIG_' + name + '=y' not in config.splitlines():
         raise SystemExit('Missing enabled feature in actual Image: CONFIG_' + name)
@@ -43,6 +44,12 @@ symbol_text = symbols.read_text()
 for name in ['kernelsu_init', 'susfs_init', 'ksu_handle_execveat', 'ksu_handle_setresuid']:
     if not re.search(r'\b' + name + r'$', symbol_text, re.M):
         raise SystemExit('Required linked symbol missing: ' + name)
+stock_cert = ssl.PEM_cert_to_DER_cert((package / 'certs/ace5-stock-module-cert.pem').read_text())
+stock_cert_sha256 = hashlib.sha256(stock_cert).hexdigest()
+if stock_cert_sha256 != '5412f448880df61ebddd15398b7bf11e223cb96a266fb2ccc6152285e073b7ab':
+    raise SystemExit('Unexpected stock module certificate')
+if stock_cert not in raw:
+    raise SystemExit('F.53 stock module certificate missing from actual kernel Image')
 out.mkdir(parents=True, exist_ok=True)
 shutil.copy2(image, out / 'Image')
 shutil.copy2(symbols, out / 'System.map')
@@ -51,6 +58,7 @@ shutil.copy2(package / 'sources.lock.json', out / 'sources.lock.json')
 report = {'status': 'compiled-and-statically-checked; not device-tested',
           'target_firmware': lock['firmware'], 'banner': match.group(0).decode(errors='replace'),
           'susfs_version': lock['susfs_version'], 'kpm': False,
+          'stock_module_certificate_sha256': stock_cert_sha256,
           'note': 'Source branch has not been proven identical to the F.53 stock kernel commit.'}
 (out / 'build-report.json').write_text(json.dumps(report, indent=2) + '\n')
 notes = '''这是编译并静态检查的内核，尚未经过 Ace 5 实机验证。

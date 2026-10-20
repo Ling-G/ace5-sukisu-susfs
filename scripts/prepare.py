@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import re
 import shutil
+import ssl
 import subprocess
 
 PACKAGE = Path(__file__).resolve().parents[1]
@@ -81,9 +82,15 @@ def prepare(workspace, addons):
     pos = text.rfind('endmenu')
     require(pos >= 0, 'drivers/Kconfig menu not found')
     write(drivers_cfg, text[:pos] + 'source "drivers/kernelsu/Kconfig"\n\n' + text[pos:])
+    # Retain trust in the F.53 stock GKI modules alongside our build's signing key.
+    stock_cert = (PACKAGE / 'certs/ace5-stock-module-cert.pem').read_text()
+    stock_der = ssl.PEM_cert_to_DER_cert(stock_cert)
+    require(hashlib.sha256(stock_der).hexdigest() == '5412f448880df61ebddd15398b7bf11e223cb96a266fb2ccc6152285e073b7ab',
+            'Unexpected F.53 module trust certificate')
+    write(common / 'certs/ace5-stock-module-cert.pem', stock_cert)
     # Set only feature options; keep the OEM security, CFI and export policies.
     config = common / 'arch/arm64/configs/gki_defconfig'
-    enabled = ['KSU', 'KSU_SUSFS', 'KSU_SUSFS_SUS_PATH', 'KSU_SUSFS_SUS_MOUNT',
+    enabled = ['SYSTEM_TRUSTED_KEYRING', 'KSU', 'KSU_SUSFS', 'KSU_SUSFS_SUS_PATH', 'KSU_SUSFS_SUS_MOUNT',
                'KSU_SUSFS_SUS_KSTAT', 'KSU_SUSFS_SPOOF_UNAME', 'KSU_SUSFS_ENABLE_LOG',
                'KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS', 'KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG',
                'KSU_SUSFS_OPEN_REDIRECT', 'KSU_SUSFS_SUS_MAP']
@@ -91,6 +98,8 @@ def prepare(workspace, addons):
         subprocess.run(['bash', str(common / 'scripts/config'), '--file', str(config), '-e', option], check=True)
     for option in ['KPM', 'KSU_DEBUG']:
         subprocess.run(['bash', str(common / 'scripts/config'), '--file', str(config), '-d', option], check=True)
+    subprocess.run(['bash', str(common / 'scripts/config'), '--file', str(config),
+                    '--set-str', 'SYSTEM_TRUSTED_KEYS', 'certs/ace5-stock-module-cert.pem'], check=True)
     # Adding Kconfig symbols changes the canonical defconfig. Disable only its text equality check.
     build_cfg = common / 'build.config.gki'
     write(build_cfg, replace_one(build_cfg.read_text(),

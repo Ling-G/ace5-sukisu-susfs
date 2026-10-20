@@ -11,5 +11,11 @@
   "deviceTested": false,
   "selinuxCompatibilityPreflight": true,
   "actionlint": true,
-  "lastCompleteBuild": "failed: upstream KernelSU-only SELinux interfaces; compatibility fix pending full rebuild"
+  "lastCompleteBuild": "build #4 compiled, temporarily booted and root/SUSFS passed; FAILED Wi-Fi/Bluetooth/audio/mobile data; never persistently flashed",
+  "priorBuild4Compiled": true,
+  "priorBuild4RootAndSusfsVerified": true,
+  "priorBuild4HardwarePass": false,
+  "stockKernelRestoredAndHardwareNormal": true,
+  "stockRfkillSignatureVerified": true,
+  "currentRevisionCompiled": false
 }
