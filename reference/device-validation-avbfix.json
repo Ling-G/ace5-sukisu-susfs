@@ -1,0 +1,45 @@
+{
+  "status": "Permanent boot_a installation and ordinary reboot verified successfully",
+  "image": "boot-F53-SukiSU-SUSFS-avbfix.img",
+  "bytes": 201326592,
+  "sha256": "66598cf3862726ce90e2e55b555b68215a8d3e3c6202ac17199751dd832de1be",
+  "payload_bytes": 36040704,
+  "payload_unchanged": true,
+  "kernel_unchanged": true,
+  "vbmeta_offset": 36040704,
+  "vbmeta_bytes": 768,
+  "algorithm": "NONE",
+  "oem_signature": false,
+  "device_requirement": "unlocked bootloader; verified on PKG110 F.53",
+  "avb_flags": 0,
+  "rollback_index": 0,
+  "vbmeta_partition_modified": false,
+  "properties_preserved": [
+    "os_version:14",
+    "fingerprint",
+    "security_patch:2026-06-01"
+  ],
+  "validation": {
+    "local_avb_structure_and_digest": true,
+    "portable_repacker_byte_identical": true,
+    "boot_a_readback_sha256": "66598cf3862726ce90e2e55b555b68215a8d3e3c6202ac17199751dd832de1be",
+    "permanent_boot": true,
+    "ordinary_reboot": true,
+    "root_uid": 0,
+    "susfs_version": "v2.3.0",
+    "selinux": "Enforcing",
+    "user_confirmed": [
+      "unlock to home screen",
+      "Wi-Fi",
+      "Bluetooth",
+      "sound output",
+      "mobile data"
+    ],
+    "date": "2026-10-20",
+    "susfs_userspace_module_installed": false
+  },
+  "known_limitations": [
+    "oplus_bsp_game_opt has four unresolved legacy android_vh_scx tracepoints; game optimization compatibility remains unverified",
+    "Camera, fingerprint, charging and sleep have not received full validation"
+  ]
+}
